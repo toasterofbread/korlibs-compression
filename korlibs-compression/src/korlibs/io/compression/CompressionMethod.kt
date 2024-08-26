@@ -10,7 +10,7 @@ interface CompressionMethod {
 
     val level: Int get() = 6
 
-	suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Unit = unsupported()
+	suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long = unsupported()
 
 	suspend fun compress(
 		i: AsyncInputStream,
@@ -21,7 +21,7 @@ interface CompressionMethod {
 	object Uncompressed : CompressionMethod {
         override val name: String get() = "STORE"
 
-		override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream) { i.copyTo(o) }
+		override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long { return i.copyTo(o) }
 		override suspend fun compress(i: AsyncInputStream, o: AsyncOutputStream, context: CompressionContext) { i.copyTo(o) }
 	}
 }

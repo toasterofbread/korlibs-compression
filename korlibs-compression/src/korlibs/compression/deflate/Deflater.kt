@@ -22,7 +22,7 @@ internal open class DeflaterPortable(val windowBits: Int) : IDeflaterInternal {
         }
     }
 
-    override suspend fun uncompress(reader: DeflaterBitReader, out: DeflaterAsyncOutputStream) {
+    override suspend fun uncompress(reader: DeflaterBitReader, out: DeflaterAsyncOutputStream): Long {
         //println("reader.bigChunkSize=${reader.bigChunkSize}, reader.readWithSize=${reader.readWithSize}")
         val sout = SlidingWindowWithOutput(SlidingWindow(windowBits), out, reader.bigChunkSize, reader.readWithSize)
         var lastBlock = false
@@ -119,6 +119,8 @@ internal open class DeflaterPortable(val windowBits: Int) : IDeflaterInternal {
         //println("uncompress[4]")
         sout.flushIfRequired(finish = true)
         //println("uncompress[5]")
+
+        return ceil(reader.totalReadBits / 8.0).toLong()
     }
 
     private inline fun DeflaterBitReader.read(tree: HuffmanTree): Int = tree.read(this)

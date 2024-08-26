@@ -14,7 +14,7 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
     val DEBUG_DEFLATE = getenv("DEBUG_DEFLATE")?.toKStringFromUtf8() == "true"
     //val DEBUG_DEFLATE = true
 
-    override suspend fun uncompress(input: DeflaterBitReader, output: DeflaterAsyncOutputStream) {
+    override suspend fun uncompress(input: DeflaterBitReader, output: DeflaterAsyncOutputStream): Long {
         memScoped {
             val strm: z_stream = alloc()
 
@@ -104,6 +104,8 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
                 }
             }
         }
+
+        return TODO("Read byte count")
     }
 
     override suspend fun compress(

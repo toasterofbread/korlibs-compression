@@ -12,7 +12,7 @@ import korlibs.io.stream.*
 object Lzma : CompressionMethod {
     override val name: String get() = "LZMA"
 
-	override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream) {
+	override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long {
 		val input = i.readAll().openSync()
 		val properties = input.readBytesExact(5)
 		val decoder = SevenZip.LzmaDecoder()
@@ -22,6 +22,8 @@ object Lzma : CompressionMethod {
 		o.writeBytes(MemorySyncStreamToByteArray {
 			if (!decoder.code(input.toLzmaInput(), this.toLzmaOutput(), outSize)) throw Exception("Error in data stream")
 		})
+
+		return TODO("Read byte count")
 	}
 
 	override suspend fun compress(i: AsyncInputStream, o: AsyncOutputStream, context: CompressionContext) {

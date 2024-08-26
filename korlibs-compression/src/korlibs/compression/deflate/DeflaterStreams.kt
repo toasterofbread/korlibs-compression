@@ -11,6 +11,7 @@ internal interface DeflaterBitReader {
     val bigChunkSize: Int
     val readWithSize: Int
     val bitsavailable: Int
+    val totalReadBits: Long
     fun ensureBits(bits: Int)
     suspend fun hasAvailable(): Boolean
     suspend fun getAvailable(): Long
@@ -38,6 +39,7 @@ internal fun BitReader.toDeflater(): DeflaterBitReader = object : DeflaterBitRea
     override val bigChunkSize: Int get() = this@toDeflater.bigChunkSize
     override val readWithSize: Int get() = this@toDeflater.readWithSize
     override val bitsavailable: Int get() = this@toDeflater.bitsavailable
+    override val totalReadBits: Long get() = this@toDeflater.totalReadBits
     override fun ensureBits(bits: Int) = this@toDeflater.ensureBits(bits)
     override suspend fun hasAvailable(): Boolean = this@toDeflater.hasAvailable()
     override suspend fun getAvailable(): Long  = this@toDeflater.getAvailable()
@@ -86,6 +88,7 @@ internal open class BitReader constructor(
 
     var bitdata = 0
     var bitsavailable = 0
+    var totalReadBits: Long = 0
 
     inline fun discardBits(): BitReader {
         //if (bitsavailable > 0) println("discardBits: $bitsavailable")
@@ -141,6 +144,7 @@ internal open class BitReader constructor(
     fun skipBits(bitcount: Int) {
         this.bitdata = this.bitdata ushr bitcount
         this.bitsavailable -= bitcount
+        this.totalReadBits += bitcount
     }
 
     fun readBits(bitcount: Int): Int {
@@ -182,6 +186,8 @@ internal open class BitReader constructor(
         }
         discardBits()
         val readCount = sbuffers.read(out, offset, count)
+        totalReadBits += count * 8
+
         if (readCount > 0) sbuffersReadPos += readCount
         //for (n in 0 until count) out[offset + n] = _su8().toByte()
     }

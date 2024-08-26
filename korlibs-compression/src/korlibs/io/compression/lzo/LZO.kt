@@ -84,7 +84,7 @@ open class LZO(val headerType: HeaderType = HeaderType.SHORT) : CompressionMetho
         }
     }
 
-    override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream) {
+    override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long {
         if (headerType == HeaderType.NONE) error("Unsupported raw (without header) uncompression for now")
 
         // Small header  version
@@ -114,6 +114,8 @@ open class LZO(val headerType: HeaderType = HeaderType.SHORT) : CompressionMetho
                 error("NOT A LZO FILE")
             }
         }
+
+        return TODO("Read byte count")
     }
 
     override suspend fun compress(i: AsyncInputStream, o: AsyncOutputStream, context: CompressionContext) {

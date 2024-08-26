@@ -24,7 +24,7 @@ open class GZIPBase(val checkCrc: Boolean, val deflater: () -> IDeflater) : Comp
     override fun toString(): String = "GZIPBase($checkCrc, ${deflater})"
 
 	@OptIn(ExperimentalStdlibApi::class)
-	override suspend fun uncompress(i: AsyncInputStream, out: AsyncOutputStream) {
+	override suspend fun uncompress(i: AsyncInputStream, out: AsyncOutputStream): Long {
 		val r = BitReader(i)
 		r.prepareBigChunkIfRequired()
         val h0 = r.su8()
@@ -67,6 +67,8 @@ open class GZIPBase(val checkCrc: Boolean, val deflater: () -> IDeflater) : Comp
 		if (checkCrc && (csize != size || ccrc32 != crc32)) {
 			invalidOp("Size doesn't match SIZE(${csize.toHexString()} != ${size.toHexString()}) || CRC32(${ccrc32.toHexString()} != ${crc32.toHexString()})")
 		}
+
+		return TODO("Read byte count")
 	}
 
 	override suspend fun compress(

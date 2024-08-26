@@ -3,7 +3,7 @@ package korlibs.compression.deflate
 import java.util.zip.*
 
 actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterInternal {
-    override suspend fun uncompress(i: DeflaterBitReader, o: DeflaterAsyncOutputStream) {
+    override suspend fun uncompress(i: DeflaterBitReader, o: DeflaterAsyncOutputStream): Long {
         val tempInput = ByteArray(64 * 1024)
         var tempInputSize = 0
         val tempOutput = ByteArray(128 * 1024)
@@ -21,6 +21,8 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
                     o.write(tempOutput, 0, written)
                 }
             } while (!inflater.finished())
+
+            return inflater.totalIn.toLong()
         } finally {
             val remaining = inflater.remaining
             //println("REMAINING: tempInputSize=$tempInputSize, remaining=$remaining")

@@ -4,10 +4,10 @@ import korlibs.io.compression.*
 import korlibs.io.stream.*
 
 internal interface IDeflaterInternal : IDeflater {
-    suspend fun uncompress(i: DeflaterBitReader, o: DeflaterAsyncOutputStream)
+    suspend fun uncompress(i: DeflaterBitReader, o: DeflaterAsyncOutputStream): Long
     suspend fun compress(i: DeflaterBitReader, o: DeflaterAsyncOutputStream, level: Float = 1f)
-    override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream) {
-        this.uncompress(BitReader(i).toDeflater(), o.toDeflater())
+    override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long {
+        return this.uncompress(BitReader(i).toDeflater(), o.toDeflater())
     }
 
     override suspend fun compress(i: AsyncInputStream, o: AsyncOutputStream, context: CompressionContext) {

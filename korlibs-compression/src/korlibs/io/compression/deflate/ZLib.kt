@@ -7,6 +7,7 @@ import korlibs.io.compression.CompressionMethod
 import korlibs.io.lang.invalidOp
 import korlibs.io.stream.*
 import korlibs.io.util.checksum.Adler32
+import kotlin.math.ceil
 
 open class ZLib(val deflater: (windowBits: Int) -> IDeflater) : CompressionMethod {
     override val name: String get() = "ZLIB"
@@ -16,7 +17,7 @@ open class ZLib(val deflater: (windowBits: Int) -> IDeflater) : CompressionMetho
     object Portable : ZLib({ DeflatePortable(it) })
 
 	@OptIn(ExperimentalStdlibApi::class)
-	override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream) {
+	override suspend fun uncompress(i: AsyncInputStream, o: AsyncOutputStream): Long {
 		val r = BitReader(i)
 		//println("Zlib.uncompress.available[0]:" + s.available())
 		r.prepareBigChunkIfRequired()
@@ -56,6 +57,8 @@ open class ZLib(val deflater: (windowBits: Int) -> IDeflater) : CompressionMetho
 		//println("Zlib.uncompress.available[1]:" + s.available())
 		if (chash != adler32) invalidOp("Adler32 doesn't match ${chash.toHexString()} != ${adler32.toHexString()}")
 		//println("ZLib.uncompress[4]")
+
+		return TODO("Read byte count")
 	}
 
 	override suspend fun compress(
