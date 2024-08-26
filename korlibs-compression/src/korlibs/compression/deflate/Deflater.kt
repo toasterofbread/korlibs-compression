@@ -11,6 +11,11 @@ internal open class DeflaterPortable(val windowBits: Int) : IDeflaterInternal {
         o: DeflaterAsyncOutputStream,
         level: Float
     ) {
+        if (!i.hasAvailable()) {
+            o.writeBytes(byteArrayOf(0x03, 0x0))
+            return
+        }
+
         while (i.hasAvailable()) {
             val available = i.getAvailable()
             val chunkSize = min(available, 0xFFFFL).toInt()
