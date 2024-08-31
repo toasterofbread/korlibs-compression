@@ -62,6 +62,7 @@ internal fun AsyncOutputStream.toDeflater(): DeflaterAsyncOutputStream = object 
     override suspend fun writeBytes(bytes: ByteArray) = this@toDeflater.writeBytes(bytes)
 }
 
+// Are there any missing totalReadBits incrementations in this class?
 internal open class BitReader constructor(
     val s: AsyncInputStream,
     val bigChunkSize: Int = BIG_CHUNK_SIZE,
@@ -93,6 +94,7 @@ internal open class BitReader constructor(
     inline fun discardBits(): BitReader {
         //if (bitsavailable > 0) println("discardBits: $bitsavailable")
         this.bitdata = 0
+        this.totalReadBits += this.bitsavailable
         this.bitsavailable = 0
         return this
     }
