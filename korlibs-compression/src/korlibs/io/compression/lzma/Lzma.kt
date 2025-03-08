@@ -23,7 +23,7 @@ object Lzma : CompressionMethod {
 			if (!decoder.code(input.toLzmaInput(), this.toLzmaOutput(), outSize)) throw Exception("Error in data stream")
 		})
 
-		return TODO("Read byte count")
+		return input.positionRead
 	}
 
 	override suspend fun compress(i: AsyncInputStream, o: AsyncOutputStream, context: CompressionContext) {
