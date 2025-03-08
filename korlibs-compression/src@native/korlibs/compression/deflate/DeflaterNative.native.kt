@@ -38,7 +38,7 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
             var writeTime = 0.milliseconds
             var inflateTime = 0.milliseconds
             var totalTime = 0.milliseconds
-            var readCount = 0
+            var readCount: Long = 0L
             var writeCount = 0
             var inflateCount = 0
 
@@ -56,8 +56,9 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
                             do {
                                 //println("strm.avail_in: ${strm.avail_in}")
                                 readTime += kotlin.time.measureTime {
-                                    strm.avail_in = input.read(inpArray, 0, CHUNK).convert()
-                                    readCount++
+                                    val read: Int = input.read(inpArray, 0, CHUNK)
+                                    strm.avail_in = read.convert()
+                                    readCount += read.toLong()
                                 }
                                 if (strm.avail_in == 0u || strm.avail_in > CHUNK.convert()) break
                                 tempInputSize = strm.avail_in.convert()
@@ -90,6 +91,7 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
                             val remaining = strm.avail_in.toInt()
                             if (remaining > 0) {
                                 input.returnToBuffer(inpArray, tempInputSize - remaining, remaining)
+                                readCount -= remaining
                                 //error("too much data in DeflateNative stream")
                             }
 
@@ -103,9 +105,9 @@ actual fun DeflaterNative(windowBits: Int): IDeflater = object : IDeflaterIntern
                     println("DeflateNative.uncompress: inflateCount=$inflateCount, inflateTime=$inflateTime, readCount=$readCount, readTime=$readTime, writeCount=$writeCount, writeTime=$writeTime, totalTime=$totalTime, CHUNK=$CHUNK, input=$input, output=$output")
                 }
             }
-        }
 
-        return TODO("Read byte count")
+            return readCount
+        }
     }
 
     override suspend fun compress(
