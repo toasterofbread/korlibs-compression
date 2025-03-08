@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.*
 
 plugins {
-    kotlin("multiplatform") version "2.0.10"
+    kotlin("multiplatform") version "2.1.10"
     id("com.android.library") version "8.2.2"
     id("org.jetbrains.kotlinx.kover") version "0.8.3" apply false
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.16.2"
@@ -445,6 +445,7 @@ subprojects {
             testRuns.getByName(KotlinTargetWithTests.DEFAULT_TEST_RUN_NAME).executionTask.configure {
                 useKarma {
                     useChromeHeadless()
+                    useFirefoxHeadless()
                     File(project.rootProject.rootDir, "karma.config.d").takeIf { it.exists() }?.let {
                         useConfigDirectory(it)
                     }
@@ -1079,6 +1080,13 @@ class MicroAmper(val project: Project) {
                 //for ((alias, platforms) in kotlinAliases) {
                 ssDependsOn(alias, "common")
                 for (platform in platforms) ssDependsOn(platform, alias)
+            }
+
+            commonTest {
+                dependencies {
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+                    implementation("com.willowtreeapps.assertk:assertk:0.28.1")
+                }
             }
         }
         //println(" -> $platforms")
