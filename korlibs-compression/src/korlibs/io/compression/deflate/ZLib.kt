@@ -58,7 +58,7 @@ open class ZLib(val deflater: (windowBits: Int) -> IDeflater) : CompressionMetho
 		if (chash != adler32) invalidOp("Adler32 doesn't match ${chash.toHexString()} != ${adler32.toHexString()}")
 		//println("ZLib.uncompress[4]")
 
-		return TODO("Read byte count")
+		return r.totalReadBits * Byte.SIZE_BITS
 	}
 
 	override suspend fun compress(
